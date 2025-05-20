@@ -12,6 +12,7 @@ const structuralUnitsRoutes = require("./routes/structuralUnits");
 const tasksRoutes = require("./routes/tasks");
 const exercisesRoutes = require("./routes/exercises");
 const evaluationsRoutes = require("./routes/evaluations");
+const attendanceRoutes = require("./routes/attendance");
 
 // Initialize Express
 const app = express();
@@ -37,6 +38,7 @@ app.use("/api/structural-units", structuralUnitsRoutes);
 app.use("/api/tasks", tasksRoutes);
 app.use("/api/exercises", exercisesRoutes);
 app.use("/api/evaluations", evaluationsRoutes);
+app.use("/api/attendance", attendanceRoutes);
 
 // Basic Route
 app.get("/", (req, res) => {
