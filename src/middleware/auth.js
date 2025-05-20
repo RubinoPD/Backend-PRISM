@@ -40,3 +40,30 @@ exports.protect = async (req, res, next) => {
     next(error);
   }
 };
+
+// Middleware to restrict access to admins only
+exports.adminOnly = (req, res, next) => {
+  if (req.user && req.user.role === "admin") {
+    next();
+  } else {
+    res
+      .status(403)
+      .json({ message: "Access denied: Admin privileges required" });
+  }
+};
+
+// Middleware to restrict access to admins and superusers only
+exports.adminOrSuperuser = (req, res, next) => {
+  if (
+    req.user &&
+    (req.user.role === "admin" || req.user.role === "superuser")
+  ) {
+    next();
+  } else {
+    res
+      .status(403)
+      .json({
+        message: "Access denied: Admin or Superuser privileges required",
+      });
+  }
+};
