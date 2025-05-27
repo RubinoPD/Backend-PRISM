@@ -11,7 +11,7 @@ const soldiersRoutes = require("./routes/soldiers");
 const structuralUnitsRoutes = require("./routes/structuralUnits");
 const tasksRoutes = require("./routes/tasks");
 const exercisesRoutes = require("./routes/exercises");
-const evaluationsRoutes = require("./routes/evaluations");
+const evaluationsRoutes = require("./routes/evaluation");
 const attendanceRoutes = require("./routes/attendance");
 
 // Initialize Express

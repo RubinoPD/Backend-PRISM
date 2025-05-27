@@ -8,7 +8,7 @@ const {
   updateEvaluation,
   deleteEvaluation,
   getEvaluationStats,
-} = require("../controllers/evaluations");
+} = require("../controllers/evaluation");
 
 // All routes are protected
 router.use(protect);
