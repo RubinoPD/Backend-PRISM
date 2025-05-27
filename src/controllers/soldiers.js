@@ -59,11 +59,9 @@ exports.createSoldier = async (req, res) => {
 
     // Validate that subUnit is required for "Rysiu ir informaciniu sistemu burys"
     if (primaryUnit === "Rysiu ir informaciniu sistemu burys" && !subUnit) {
-      return res
-        .status(400)
-        .json({
-          message: "Sub-unit is required for the selected primary unit",
-        });
+      return res.status(400).json({
+        message: "Sub-unit is required for the selected primary unit",
+      });
     }
 
     const soldier = await Soldier.create({
@@ -105,11 +103,9 @@ exports.updateSoldier = async (req, res) => {
 
     // Validate that subUnit is required for "Rysiu ir informaciniu sistemu burys"
     if (primaryUnit === "Rysiu ir informaciniu sistemu burys" && !subUnit) {
-      return res
-        .status(400)
-        .json({
-          message: "Sub-unit is required for the selected primary unit",
-        });
+      return res.status(400).json({
+        message: "Sub-unit is required for the selected primary unit",
+      });
     }
 
     // Update fields
@@ -117,16 +113,28 @@ exports.updateSoldier = async (req, res) => {
     soldier.lastName = lastName || soldier.lastName;
     soldier.militaryRank = militaryRank || soldier.militaryRank;
     soldier.joinDate = joinDate || soldier.joinDate;
-    soldier.primaryUnit = primaryUnit || soldier.primaryUnit;
-    soldier.subUnit = subUnit;
+
+    // Handle primaryUnit and subUnit updates
+    if (primaryUnit !== undefined) {
+      soldier.primaryUnit = primaryUnit;
+
+      // If changing to "Rysiu ir informaciniu sistemu burys", subUnit should be provided
+      if (primaryUnit === "Rysiu ir informaciniu sistemu burys") {
+        if (subUnit !== undefined) {
+          soldier.subUnit = subUnit;
+        }
+        // If no subUnit provided but switching to RIS unit, keep existing subUnit if it exists
+      } else {
+        // If changing away from "Rysiu ir informaciniu sistemu burys", clear subUnit
+        soldier.subUnit = undefined;
+      }
+    } else if (subUnit !== undefined) {
+      // If only updating subUnit (primaryUnit not changed)
+      soldier.subUnit = subUnit;
+    }
 
     if (active !== undefined) {
       soldier.active = active;
-    }
-
-    // Clear subUnit if primary unit is not "Rysiu ir informaciniu sistemu burys"
-    if (soldier.primaryUnit !== "Rysiu ir informaciniu sistemu burys") {
-      soldier.subUnit = undefined;
     }
 
     const updatedSoldier = await soldier.save();

@@ -32,7 +32,9 @@ const soldierSchema = new mongoose.Schema({
   subUnit: {
     type: String,
     required: function () {
-      return this.primaryUnit === "Rysiu ir informaciniu sistemu burys";
+      return (
+        this.isNew && this.primaryUnit === "Rysiu ir informaciniu sistemu burys"
+      );
     },
     enum: [
       "RIS burys",
@@ -49,6 +51,24 @@ const soldierSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+});
+
+// Add custom validation for updates
+soldierSchema.pre("save", function (next) {
+  // If this is creation and primaryUnit is "Rysiu ir informaciniu sistemu burys", subUnit is required
+  if (
+    this.isNew &&
+    this.primaryUnit === "Rysiu ir informaciniu sistemu burys" &&
+    !this.subUnit
+  ) {
+    return next(
+      new Error(
+        'Sub-unit is required when primary unit is "Rysiu ir informaciniu sistemu burys"'
+      )
+    );
+  }
+
+  next();
 });
 
 module.exports = mongoose.model("Soldier", soldierSchema);
