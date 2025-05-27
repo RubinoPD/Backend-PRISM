@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
 require("dotenv").config();
 
 // Import models
@@ -28,19 +27,17 @@ const seedDatabase = async () => {
     await StructuralUnit.deleteMany();
     await Task.deleteMany();
 
-    // Create default admin user
-    const adminPassword = await bcrypt.hash("admin123", 10);
+    // Create default admin user (let the model handle password hashing)
     const adminUser = await User.create({
       username: "admin",
-      password: adminPassword,
+      password: "admin123",
       role: "admin",
     });
 
-    // Create default superuser
-    const superPassword = await bcrypt.hash("super123", 10);
+    // Create default superuser (let the model handle password hashing)
     const superUser = await User.create({
       username: "superuser",
-      password: superPassword,
+      password: "super123",
       role: "superuser",
     });
 

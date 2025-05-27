@@ -56,22 +56,36 @@ exports.loginUser = async (req, res) => {
   try {
     const { username, password } = req.body;
 
+    console.log("Login attempt:", { username, password: "***" }); // FOR DEBUGGING
+
     // Check if user exists
     const user = await User.findOne({ username });
 
     if (!user) {
+      console.log("User not found:", username); // FOR DEBUGGING
       return res.status(401).json({ message: "Invalid credentials" });
     }
+
+    console.log("User found:", {
+      id: user._id,
+      username: user.username,
+      role: user.role,
+    }); // FOR DEBUGGING
 
     // Check if password matches
     const isMatch = await user.comparePassword(password);
 
+    console.log("Password match:", isMatch); // FOR DEBUGGING
+
     if (!isMatch) {
+      console.log("Password mismatch for user:", username); // FOR DEBUGGING
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
     // Generate token
     const token = generateToken(user._id);
+
+    console.log("Login successful for user:", username); // FOR DEBUGGING
 
     res.json({
       _id: user._id,
@@ -80,6 +94,7 @@ exports.loginUser = async (req, res) => {
       token,
     });
   } catch (error) {
+    console.log("Login successful for user:", username); // FOR DEBUGGING
     res.status(500).json({ message: error.message });
   }
 };

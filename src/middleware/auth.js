@@ -25,7 +25,7 @@ exports.protect = async (req, res, next) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
       // Get user from token
-      req.user = await User.findById(decoded.id).select("-passowrd");
+      req.user = await User.findById(decoded.id).select("-password");
 
       if (!req.user) {
         return res.status(401).json({ message: "User no longer exists" });
@@ -60,10 +60,8 @@ exports.adminOrSuperuser = (req, res, next) => {
   ) {
     next();
   } else {
-    res
-      .status(403)
-      .json({
-        message: "Access denied: Admin or Superuser privileges required",
-      });
+    res.status(403).json({
+      message: "Access denied: Admin or Superuser privileges required",
+    });
   }
 };
