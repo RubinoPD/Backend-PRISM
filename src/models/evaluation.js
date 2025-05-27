@@ -78,7 +78,7 @@ evaluationSchema.pre("save", function (next) {
 
     this.ratings.forEach((rating) => {
       // Count ratings that are "I" or "IA" as passed
-      if (rating.rating === "I" || rating.rating == "IA") {
+      if (rating.rating === "I" || rating.rating === "IA") {
         passedCount++;
       }
     });
@@ -92,7 +92,7 @@ evaluationSchema.pre("save", function (next) {
     // For daily passed, we'd need to track by date - for now, using the same value
     this.dailyPassed = passedCount;
   }
-  next;
+  next();
 });
 
 module.exports = mongoose.model("Evaluation", evaluationSchema);
