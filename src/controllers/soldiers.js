@@ -155,7 +155,7 @@ exports.deleteSoldier = async (req, res) => {
       return res.status(404).json({ message: "Soldier not found" });
     }
 
-    await soldier.remove();
+    await soldier.deleteOne();
     res.json({ message: "Soldier removed successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
