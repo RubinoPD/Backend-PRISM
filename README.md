@@ -4055,10 +4055,10 @@ Non-Commissioned Officers:
 ├── Viršila (Master Sergeant)
 ├── Štabo Seržantas (Staff Sergeant)
 ├── Vyresnysis Seržantas (Senior Sergeant)
-└── Seržantas (Sergeant)
+├── Seržantas (Sergeant)
+└── Grandinis (Corporal)
 
 Enlisted Personnel:
-├── Grandinis (Corporal)
 ├── Vyresnysis Eilinis (Senior Private)
 ├── Eilinis (Private)
 └── Jaunesnysis Eilinis (Junior Private)
@@ -4384,8 +4384,8 @@ When reporting bugs, please include:
 
 For new features:
 
-- **Describe the use case** and business need
-- **Provide detailed requirements** and acceptance criteria
+- **Describe the use case**
+- **Provide detailed requirements**
 - **Consider impact** on existing functionality
 - **Suggest implementation approach** if applicable
 
