@@ -27,7 +27,7 @@ Personnel Records and Information System Management - Backend API
 
 ## Overview
 
-PRISM (Personnel Records and Information System Management) is a comprehensive backend API designed specifically for military personnel management. The system handles the complete lifecycle of military personnel data, including attendance tracking, training exercises, performance evaluations, and organizational structure management.
+PRISM (Personnel Records and Information System Management) is a comprehensive backend API designed specifically for military personnel management AND ONLY FOR USE IN 3RD NSB DCM-D. The system handles the complete lifecycle of military personnel data, including attendance tracking, training exercises, performance evaluations, and organizational structure management.
 
 ### Key Capabilities
 
@@ -42,7 +42,7 @@ PRISM (Personnel Records and Information System Management) is a comprehensive b
 ### Target Users
 
 - **Military Administrators**: Full system management capabilities
-- **Unit Supervisors**: Personnel and training management within their units
+- **Unit Supervisors**: Personnel and training management within the unit
 - **Training Coordinators**: Exercise and evaluation management
 - **Reporting Officers**: Statistical analysis and reporting
 
@@ -62,7 +62,7 @@ PRISM (Personnel Records and Information System Management) is a comprehensive b
 #### 👥 Personnel Management
 
 - Complete soldier profiles with personal and military information
-- Hierarchical unit assignment (Primary Unit → Sub Unit)
+- Hierarchical unit assignment (Primary Unit → Sub Unit) (Example: RIS burys → LAN/WAN)
 - Military rank management with predefined hierarchy
 - Active/inactive status tracking
 - Join date and service history
@@ -81,7 +81,7 @@ PRISM (Personnel Records and Information System Management) is a comprehensive b
 - Training exercise planning and scheduling
 - Participant management with attendance tracking
 - Instructor assignment and management
-- Exercise stages: IS (Initial), IT (Intermediate), II (Individual)
+- Exercise stages: IS (Igudziu suteikimas), IT (Igudziu tobulinimas), II (Igudziu itvirtinimas)
 - Duration tracking and statistics
 - Task-based exercise categorization
 
@@ -90,7 +90,7 @@ PRISM (Personnel Records and Information System Management) is a comprehensive b
 - Official and unofficial evaluation recording
 - Individual soldier rating system:
   - I (Įvykdyta - Completed)
-  - IA (Įvykdyta Atsižvelgiant - Completed with Consideration)
+  - IA (Įvykdyta anksciau - Completed earlier)
   - NI (Neįvykdyta - Not Completed)
   - "-" (Nevertinama - Not Evaluated)
 - Task-based evaluation framework
@@ -431,7 +431,17 @@ npm run seed
   "Kompiuteriniui tinklu skyrius",
   "1 rysiu skyrius",
   "2 rysiu skyrius",
-  "Vartotoju aptarnavimo skyrius")
+  "Vartotoju aptarnavimo skyrius"),
+  // Sub-units for "Paramos burys" (Coming soon)
+  ("Logistikos burys",
+  "Tiekimo skyrius",
+  "Kriptografijos skyrius",
+  "Transporto eksploatavimo skyrius",
+  "RIS irangos energijos tiekimo skyrius",
+  "RIS irangos kondicionavimo skyrius",
+  ),
+  // Sub-units for "PRISM valdymo grupe"
+  ("PRISM valdymo grupe")
 ];
 ```
 
