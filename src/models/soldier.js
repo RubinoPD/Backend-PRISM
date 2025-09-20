@@ -33,10 +33,16 @@ const soldierSchema = new mongoose.Schema({
     type: String,
     required: function () {
       return (
-        this.isNew && this.primaryUnit === "Rysiu ir informaciniu sistemu burys"
+        this.isNew &&
+        [
+          "Rysiu ir informaciniu sistemu burys",
+          "Paramos burys",
+          "Valdymo grupe",
+        ].includes(this.primaryUnit)
       );
     },
     enum: [
+      // RIS units
       "RIS burys",
       "LAN/WAN skyrius",
       "Videotelekonferencijos skyrius",
@@ -45,6 +51,19 @@ const soldierSchema = new mongoose.Schema({
       "1 rysiu skyrius",
       "2 rysiu skyrius",
       "Vartotoju aptarnavimo skyrius",
+
+      // Paramos burys
+      "Generatoriu technikas",
+      "Elektros technikas",
+      "Automobiliu technikas",
+      "Materialiniu daiktu technikas",
+      "Burio vadas",
+
+      //Valdymo grupe
+      "Administratorius(-e)",
+      "Kuopininkas",
+      "Kuopos vadas",
+      "Kuopos vado pavaduotojas(-e)",
     ],
   },
   active: {
@@ -55,15 +74,20 @@ const soldierSchema = new mongoose.Schema({
 
 // Add custom validation for updates
 soldierSchema.pre("save", function (next) {
-  // If this is creation and primaryUnit is "Rysiu ir informaciniu sistemu burys", subUnit is required
+  const unitsRequiringSubUnits = [
+    "Rysiu ir informaciniu sistemu burys",
+    "Paramos burys",
+    "Valdymo grupe",
+  ];
+
   if (
     this.isNew &&
-    this.primaryUnit === "Rysiu ir informaciniu sistemu burys" &&
+    this.primaryUnit === unitsRequiringSubUnits.includes(this.primaryUnit) &&
     !this.subUnit
   ) {
     return next(
       new Error(
-        'Sub-unit is required when primary unit is "Rysiu ir informaciniu sistemu burys"'
+        `Sub-unit is required when primary unit is "${this.primaryUnit}"`
       )
     );
   }
