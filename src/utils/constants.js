@@ -24,7 +24,6 @@ export const SUB_UNITS = {
     "Kuopos vado pavaduotojas",
   ],
 };
-
 // Primary Units
 export const PRIMARY_UNITS = [
   "Paramos burys",
