@@ -28,9 +28,9 @@ const seedDatabase = async () => {
     // await Task.deleteMany();
 
     // Create default users (skip if they already exist)
-    const existingAdmin = await User.findOne({ username: "admin" });
-    if (!existingAdmin) {
-      await User.create({
+    let adminUser = await User.findOne({ username: "admin" });
+    if (!adminUser) {
+      adminUser = await User.create({
         username: "admin",
         password: "admin123",
         role: "admin",
@@ -114,21 +114,25 @@ const seedDatabase = async () => {
           name: "Fizinio pasirengimo patikrinimas",
           description: "Metinis fizinio pasirengimo testas",
           type: "Individualios",
+          createdBy: adminUser._id,
         },
         {
           name: "Saudymo mokymai",
           description: "Ginklu naudojimo ir saudymo mokymai",
           type: "Individualios",
+          createdBy: adminUser._id,
         },
         {
           name: "Taktikos mokymai",
           description: "Taktiniu veiksmu mokymai",
           type: "Kolektyvines",
+          createdBy: adminUser._id,
         },
         {
           name: "Technikos prieziura",
           description: "Irangos ir technikos prieziuros mokymai",
           type: "Individualios",
+          createdBy: adminUser._id,
         },
       ];
 
