@@ -1,9 +1,9 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const exerciseSchema = new mongoose.Schema({
   taskId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Task",
+    ref: 'Task',
     required: true,
   },
   date: {
@@ -16,19 +16,19 @@ const exerciseSchema = new mongoose.Schema({
   },
   stage: {
     type: String,
-    enum: ["IS", "IT", "II", "-"],
+    enum: ['IS', 'IT', 'II', '-'],
     required: true,
   },
   instructor: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Soldier",
+    ref: 'Soldier',
     required: true,
   },
   participants: [
     {
       soldier: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Soldier",
+        ref: 'Soldier',
         required: true,
       },
       attended: {
@@ -39,16 +39,27 @@ const exerciseSchema = new mongoose.Schema({
   ],
   unit: {
     type: String,
-    required: true,
-    enum: [
-      "Paramos burys",
-      "Rysiu ir informaciniu sistemu burys",
-      "Valdymo grupe",
-    ],
+    required: false,
+    // Remove enum validation to allow empty string
+    validate: {
+      validator: function (v) {
+        // If value exists, it must be one of the valid units
+        if (v && v.length > 0) {
+          return [
+            'Paramos burys',
+            'Rysiu ir informaciniu sistemu burys',
+            'Valdymo grupe',
+          ].includes(v);
+        }
+        // Allow empty/null values
+        return true;
+      },
+      message: (props) => `${props.value} is not a valid unit`,
+    },
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
     required: true,
   },
   createdAt: {
@@ -57,4 +68,4 @@ const exerciseSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Exercise", exerciseSchema);
+module.exports = mongoose.model('Exercise', exerciseSchema);
