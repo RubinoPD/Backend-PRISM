@@ -1,6 +1,6 @@
-const Exercise = require("../models/exercise");
-const Task = require("../models/task");
-const Soldier = require("../models/soldier");
+const Exercise = require('../models/exercise');
+const Task = require('../models/task');
+const Soldier = require('../models/soldier');
 
 // @desc    Get all exercises
 // @route   GET /api/exercises
@@ -16,22 +16,29 @@ exports.getAllExercises = async (req, res) => {
 
     // Date range filtering
     if (req.query.startDate && req.query.endDate) {
+      const startDate = new Date(req.query.startDate);
+      const endDate = new Date(req.query.endDate);
+      // Set end date to end of day (23:59:59.999)
+      endDate.setHours(23, 59, 59, 999);
+
       filter.date = {
-        $gte: new Date(req.query.startDate),
-        $lte: new Date(req.query.endDate),
+        $gte: startDate,
+        $lte: endDate,
       };
     } else if (req.query.startDate) {
       filter.date = { $gte: new Date(req.query.startDate) };
     } else if (req.query.endDate) {
-      filter.date = { $lte: new Date(req.query.endDate) };
+      const endDate = new Date(req.query.endDate);
+      endDate.setHours(23, 59, 59, 999);
+      filter.date = { $lte: endDate };
     }
 
     const exercises = await Exercise.find(filter)
       .sort({ date: -1 })
-      .populate("taskId", "name")
-      .populate("instructor", "firstName lastName militaryRank")
-      .populate("participants.soldier", "firstName lastName militaryRank")
-      .populate("createdBy", "username");
+      .populate('taskId', 'name')
+      .populate('instructor', 'firstName lastName militaryRank')
+      .populate('participants.soldier', 'firstName lastName militaryRank')
+      .populate('createdBy', 'username');
 
     res.json(exercises);
   } catch (error) {
@@ -45,13 +52,13 @@ exports.getAllExercises = async (req, res) => {
 exports.getExerciseById = async (req, res) => {
   try {
     const exercise = await Exercise.findById(req.params.id)
-      .populate("taskId", "name")
-      .populate("instructor", "firstName lastName militaryRank")
-      .populate("participants.soldier", "firstName lastName militaryRank")
-      .populate("createdBy", "username");
+      .populate('taskId', 'name')
+      .populate('instructor', 'firstName lastName militaryRank')
+      .populate('participants.soldier', 'firstName lastName militaryRank')
+      .populate('createdBy', 'username');
 
     if (!exercise) {
-      return res.status(404).json({ message: "Exercise not found" });
+      return res.status(404).json({ message: 'Exercise not found' });
     }
 
     res.json(exercise);
@@ -71,13 +78,13 @@ exports.createExercise = async (req, res) => {
     // Verify task exists
     const task = await Task.findById(taskId);
     if (!task) {
-      return res.status(404).json({ message: "Task not found" });
+      return res.status(404).json({ message: 'Task not found' });
     }
 
     // Verify instructor exists
     const instructorExists = await Soldier.findById(instructor);
     if (!instructorExists) {
-      return res.status(404).json({ message: "Instructor not found" });
+      return res.status(404).json({ message: 'Instructor not found' });
     }
 
     // Verify all participants exist
@@ -105,10 +112,10 @@ exports.createExercise = async (req, res) => {
 
     // Populate response with related data
     const populatedExercise = await Exercise.findById(exercise._id)
-      .populate("taskId", "name")
-      .populate("instructor", "firstName lastName militaryRank")
-      .populate("participants.soldier", "firstName lastName militaryRank")
-      .populate("createdBy", "username");
+      .populate('taskId', 'name')
+      .populate('instructor', 'firstName lastName militaryRank')
+      .populate('participants.soldier', 'firstName lastName militaryRank')
+      .populate('createdBy', 'username');
 
     res.status(201).json(populatedExercise);
   } catch (error) {
@@ -128,14 +135,14 @@ exports.updateExercise = async (req, res) => {
     const exercise = await Exercise.findById(req.params.id);
 
     if (!exercise) {
-      return res.status(404).json({ message: "Exercise not found" });
+      return res.status(404).json({ message: 'Exercise not found' });
     }
 
     // Verify task exists if changing
     if (taskId && taskId !== exercise.taskId.toString()) {
       const task = await Task.findById(taskId);
       if (!task) {
-        return res.status(404).json({ message: "Task not found" });
+        return res.status(404).json({ message: 'Task not found' });
       }
       exercise.taskId = taskId;
     }
@@ -144,7 +151,7 @@ exports.updateExercise = async (req, res) => {
     if (instructor && instructor !== exercise.instructor.toString()) {
       const instructorExists = await Soldier.findById(instructor);
       if (!instructorExists) {
-        return res.status(404).json({ message: "Instructor not found" });
+        return res.status(404).json({ message: 'Instructor not found' });
       }
       exercise.instructor = instructor;
     }
@@ -172,10 +179,10 @@ exports.updateExercise = async (req, res) => {
 
     // Populate response with related data
     const populatedExercise = await Exercise.findById(updatedExercise._id)
-      .populate("taskId", "name")
-      .populate("instructor", "firstName lastName militaryRank")
-      .populate("participants.soldier", "firstName lastName militaryRank")
-      .populate("createdBy", "username");
+      .populate('taskId', 'name')
+      .populate('instructor', 'firstName lastName militaryRank')
+      .populate('participants.soldier', 'firstName lastName militaryRank')
+      .populate('createdBy', 'username');
 
     res.json(populatedExercise);
   } catch (error) {
@@ -191,11 +198,11 @@ exports.deleteExercise = async (req, res) => {
     const exercise = await Exercise.findById(req.params.id);
 
     if (!exercise) {
-      return res.status(404).json({ message: "Exercise not found" });
+      return res.status(404).json({ message: 'Exercise not found' });
     }
 
     await exercise.deleteOne();
-    res.json({ message: "Exercise removed successfully" });
+    res.json({ message: 'Exercise removed successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -222,7 +229,7 @@ exports.getExerciseStats = async (req, res) => {
     }
 
     const exercises = await Exercise.find(filter)
-      .populate("taskId", "name")
+      .populate('taskId', 'name')
       .lean();
 
     // Calculate statistics
@@ -235,14 +242,14 @@ exports.getExerciseStats = async (req, res) => {
         IS: 0,
         IT: 0,
         II: 0,
-        "-": 0,
+        '-': 0,
       },
     };
 
     // Process exercises
     exercises.forEach((exercise) => {
       // Count by task
-      const taskName = exercise.taskId ? exercise.taskId.name : "Unknown";
+      const taskName = exercise.taskId ? exercise.taskId.name : 'Unknown';
       if (!stats.exercisesByTask[taskName]) {
         stats.exercisesByTask[taskName] = {
           count: 0,
