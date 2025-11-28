@@ -95,4 +95,9 @@ evaluationSchema.pre('save', function (next) {
   next();
 });
 
+// Indexes for better query performance
+evaluationSchema.index({ date: 1 }); // For date range queries
+evaluationSchema.index({ evaluationType: 1 }); // For type filtering
+evaluationSchema.index({ unit: 1 }); // For unit filtering
+
 module.exports = mongoose.model('Evaluation', evaluationSchema);
