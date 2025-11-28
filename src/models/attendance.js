@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const attendanceSchema = new mongoose.Schema({
   date: {
@@ -7,13 +7,13 @@ const attendanceSchema = new mongoose.Schema({
   },
   soldier: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Soldier",
+    ref: 'Soldier',
     required: true,
   },
   status: {
     type: String,
     required: true,
-    enum: ["Present", "Absent", "Sick", "Leave", "Mission", "Other"],
+    enum: ['Present', 'Absent', 'Sick', 'Leave', 'Mission', 'Other'],
   },
   reason: {
     type: String,
@@ -23,14 +23,14 @@ const attendanceSchema = new mongoose.Schema({
     type: String,
     required: true,
     enum: [
-      "Paramos burys",
-      "Rysiu ir informaciniu sistemu burys",
-      "Valdymo grupe",
+      'Paramos burys',
+      'Rysiu ir informaciniu sistemu burys',
+      'Valdymo grupe',
     ],
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
     required: true,
   },
   createdAt: {
@@ -41,5 +41,8 @@ const attendanceSchema = new mongoose.Schema({
 
 // Create a compound index for date and soldier to ensure uniqueness
 attendanceSchema.index({ date: 1, soldier: 1 }, { unique: true });
+attendanceSchema.index({ date: 1 }); // For date range queries
+attendanceSchema.index({ unit: 1 }); // For unit filtering
+attendanceSchema.index({ status: 1 }); // For status statistics
 
-module.exports = mongoose.model("Attendance", attendanceSchema);
+module.exports = mongoose.model('Attendance', attendanceSchema);
