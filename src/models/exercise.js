@@ -68,4 +68,10 @@ const exerciseSchema = new mongoose.Schema({
   },
 });
 
+// Indexes for better query performance
+
+exerciseSchema.index({ date: 1 }); // for date range queries
+exerciseSchema.index({ unit: 1 }); // for unit filtering
+exerciseSchema.index({ taskId: 1 }); // for task statistics
+
 module.exports = mongoose.model('Exercise', exerciseSchema);
