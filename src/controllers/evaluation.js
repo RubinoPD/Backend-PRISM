@@ -69,15 +69,8 @@ exports.getEvaluationById = async (req, res) => {
 // @access  Private (Admin/Superuser)
 exports.createEvaluation = async (req, res) => {
   try {
-    const {
-      date,
-      evaluationType,
-      taskCode,
-      taskName,
-      recordedBy,
-      ratings,
-      unit,
-    } = req.body;
+    const { date, evaluationType, taskCode, taskName, recordedBy, ratings } =
+      req.body;
 
     // Verify recorder exists
     const recorderExists = await Soldier.findById(recordedBy);
@@ -105,7 +98,6 @@ exports.createEvaluation = async (req, res) => {
       taskName,
       recordedBy,
       ratings: ratings || [],
-      unit,
       createdBy: req.user._id,
     });
 
@@ -126,15 +118,8 @@ exports.createEvaluation = async (req, res) => {
 // @access  Private (Admin/Superuser)
 exports.updateEvaluation = async (req, res) => {
   try {
-    const {
-      date,
-      evaluationType,
-      taskCode,
-      taskName,
-      recordedBy,
-      ratings,
-      unit,
-    } = req.body;
+    const { date, evaluationType, taskCode, taskName, recordedBy, ratings } =
+      req.body;
 
     // Find evaluation
     const evaluation = await Evaluation.findById(req.params.id);
@@ -170,7 +155,6 @@ exports.updateEvaluation = async (req, res) => {
     if (evaluationType) evaluation.evaluationType = evaluationType;
     if (taskCode) evaluation.taskCode = taskCode;
     if (taskName) evaluation.taskName = taskName;
-    if (unit) evaluation.unit = unit;
 
     const updatedEvaluation = await evaluation.save();
 
