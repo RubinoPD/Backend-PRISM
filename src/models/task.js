@@ -1,6 +1,13 @@
 const mongoose = require("mongoose");
 
 const taskSchema = new mongoose.Schema({
+  code: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+    uppercase: true,
+  },
   name: {
     type: String,
     required: true,

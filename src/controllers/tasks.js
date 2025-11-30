@@ -47,7 +47,15 @@ exports.getTaskById = async (req, res) => {
 // @access  Private (Admin/Superuser)
 exports.createTask = async (req, res) => {
   try {
-    const { name, description, type } = req.body;
+    const { code, name, description, type } = req.body;
+
+    // Check if task with same code already exists
+    const existingTaskByCode = await Task.findOne({ code });
+    if (existingTaskByCode) {
+      return res
+        .status(400)
+        .json({ message: "A task with this code already exists" });
+    }
 
     // Check if task with same name already exists
     const existingTask = await Task.findOne({ name });
@@ -75,13 +83,24 @@ exports.createTask = async (req, res) => {
 // @access  Private (Admin/Superuser)
 exports.updateTask = async (req, res) => {
   try {
-    const { name, description, type } = req.body;
+    const { code, name, description, type } = req.body;
 
     // Find task
     const task = await Task.findById(req.params.id);
 
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
+    }
+
+    // If code is changing, check for duplicates
+    if (code && code !== task.code) {
+      const existingTaskByCode = await Task.findOne({ code });
+      if (existingTaskByCode) {
+        return res
+          .status(400)
+          .json({ message: "A task with this code already exists" });
+      }
+      task.code = code;
     }
 
     // If name is changing, check for duplicates
