@@ -1,5 +1,5 @@
-const Evaluation = require("../models/evaluation");
-const Soldier = require("../models/soldier");
+const Evaluation = require('../models/evaluation');
+const Soldier = require('../models/soldier');
 
 // @desc    Get all evaluations
 // @route   GET /api/evaluations
@@ -34,9 +34,12 @@ exports.getAllEvaluations = async (req, res) => {
     // Get all evaluations with populated fields
     const evaluations = await Evaluation.find(filter)
       .sort({ date: -1 })
-      .populate("recordedBy", "firstName lastName militaryRank")
-      .populate("ratings.soldier", "firstName lastName militaryRank")
-      .populate("createdBy", "username");
+      .populate('recordedBy', 'firstName lastName militaryRank')
+      .populate(
+        'ratings.soldier',
+        'firstName lastName militaryRank primaryUnit'
+      )
+      .populate('createdBy', 'username');
 
     res.json(evaluations);
   } catch (error) {
@@ -50,12 +53,15 @@ exports.getAllEvaluations = async (req, res) => {
 exports.getEvaluationById = async (req, res) => {
   try {
     const evaluation = await Evaluation.findById(req.params.id)
-      .populate("recordedBy", "firstName lastName militaryRank")
-      .populate("ratings.soldier", "firstName lastName militaryRank")
-      .populate("createdBy", "username");
+      .populate('recordedBy', 'firstName lastName militaryRank')
+      .populate(
+        'ratings.soldier',
+        'firstName lastName militaryRank primaryUnit'
+      )
+      .populate('createdBy', 'username');
 
     if (!evaluation) {
-      return res.status(404).json({ message: "Evaluation not found" });
+      return res.status(404).json({ message: 'Evaluation not found' });
     }
 
     res.json(evaluation);
@@ -75,7 +81,7 @@ exports.createEvaluation = async (req, res) => {
     // Verify recorder exists
     const recorderExists = await Soldier.findById(recordedBy);
     if (!recorderExists) {
-      return res.status(404).json({ message: "Recorder not found" });
+      return res.status(404).json({ message: 'Recorder not found' });
     }
 
     // Verify all rated soldiers exist
@@ -103,9 +109,9 @@ exports.createEvaluation = async (req, res) => {
 
     // Populate response with related data
     const populatedEvaluation = await Evaluation.findById(evaluation._id)
-      .populate("recordedBy", "firstName lastName militaryRank")
-      .populate("ratings.soldier", "firstName lastName militaryRank")
-      .populate("createdBy", "username");
+      .populate('recordedBy', 'firstName lastName militaryRank')
+      .populate('ratings.soldier', 'firstName lastName militaryRank')
+      .populate('createdBy', 'username');
 
     res.status(201).json(populatedEvaluation);
   } catch (error) {
@@ -125,14 +131,14 @@ exports.updateEvaluation = async (req, res) => {
     const evaluation = await Evaluation.findById(req.params.id);
 
     if (!evaluation) {
-      return res.status(404).json({ message: "Evaluation not found" });
+      return res.status(404).json({ message: 'Evaluation not found' });
     }
 
     // Verify recorder exists if changing
     if (recordedBy && recordedBy !== evaluation.recordedBy.toString()) {
       const recorderExists = await Soldier.findById(recordedBy);
       if (!recorderExists) {
-        return res.status(404).json({ message: "Recorder not found" });
+        return res.status(404).json({ message: 'Recorder not found' });
       }
       evaluation.recordedBy = recordedBy;
     }
@@ -160,9 +166,9 @@ exports.updateEvaluation = async (req, res) => {
 
     // Populate response with related data
     const populatedEvaluation = await Evaluation.findById(updatedEvaluation._id)
-      .populate("recordedBy", "firstName lastName militaryRank")
-      .populate("ratings.soldier", "firstName lastName militaryRank")
-      .populate("createdBy", "username");
+      .populate('recordedBy', 'firstName lastName militaryRank')
+      .populate('ratings.soldier', 'firstName lastName militaryRank')
+      .populate('createdBy', 'username');
 
     res.json(populatedEvaluation);
   } catch (error) {
@@ -178,11 +184,11 @@ exports.deleteEvaluation = async (req, res) => {
     const evaluation = await Evaluation.findById(req.params.id);
 
     if (!evaluation) {
-      return res.status(404).json({ message: "Evaluation not found" });
+      return res.status(404).json({ message: 'Evaluation not found' });
     }
 
     await evaluation.deleteOne();
-    res.json({ message: "Evaluation removed successfully" });
+    res.json({ message: 'Evaluation removed successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -220,14 +226,14 @@ exports.getEvaluationStats = async (req, res) => {
         I: 0,
         IA: 0,
         NI: 0,
-        "-": 0,
+        '-': 0,
       },
       taskPerformance: {},
     };
 
     // Count by evaluation type
     evaluations.forEach((evaluation) => {
-      if (evaluation.evaluationType === "Oficialus") {
+      if (evaluation.evaluationType === 'Oficialus') {
         stats.officialCount++;
       } else {
         stats.unofficialCount++;
@@ -252,7 +258,7 @@ exports.getEvaluationStats = async (req, res) => {
 
       // Count passed ratings (I or IA)
       const passedCount = evaluation.ratings.filter(
-        (r) => r.rating === "I" || r.rating === "IA"
+        (r) => r.rating === 'I' || r.rating === 'IA'
       ).length;
 
       taskStat.passed += passedCount;
