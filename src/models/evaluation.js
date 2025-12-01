@@ -5,6 +5,7 @@ const evaluationSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Task',
     required: true,
+    unique: true,
   },
   date: {
     type: Date,
@@ -41,6 +42,35 @@ const evaluationSchema = new mongoose.Schema({
         type: String,
         enum: ['I', 'IA', 'NI', '-'],
         required: true,
+      },
+    },
+  ],
+  // History of previous evaluations
+  history: [
+    {
+      date: {
+        type: Date,
+        required: true,
+      },
+      recordedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Soldier',
+      },
+      ratings: [
+        {
+          soldier: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Soldier',
+          },
+          rating: {
+            type: String,
+            enum: ['I', 'IA', 'NI', '-'],
+          },
+        },
+      ],
+      updatedAt: {
+        type: Date,
+        default: Date.now,
       },
     },
   ],
@@ -95,5 +125,6 @@ evaluationSchema.pre('save', function (next) {
 evaluationSchema.index({ date: 1 }); // For date range queries
 evaluationSchema.index({ evaluationType: 1 }); // For type filtering
 evaluationSchema.index({ unit: 1 }); // For unit filtering
+evaluationSchema.index({ taskId: 1 });
 
 module.exports = mongoose.model('Evaluation', evaluationSchema);

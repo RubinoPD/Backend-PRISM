@@ -61,6 +61,11 @@ exports.getEvaluationById = async (req, res) => {
         'ratings.soldier',
         'firstName lastName militaryRank primaryUnit'
       )
+      .populate('history.recordedBy', 'firstName lastName militaryRank')
+      .populate(
+        'history.ratings.soldier',
+        'firstName lastName militaryRank primaryUnit'
+      )
       .populate('createdBy', 'username');
 
     if (!evaluation) {
@@ -94,6 +99,16 @@ exports.createEvaluation = async (req, res) => {
       return res.status(404).json({ message: 'Task not found' });
     }
 
+    // Check if evaluation already exists for this task
+    const existingEvaluation = await Evaluation.findOne({ taskId });
+    if (existingEvaluation) {
+      return res.status(400).json({
+        message:
+          'Evaluation for this task already exists. Please edit the existing evaluation instead.',
+        existingEvaluationId: existingEvaluation._id,
+      });
+    }
+
     // Verify recorder exists
     const recorderExists = await Soldier.findById(recordedBy);
     if (!recorderExists) {
@@ -121,6 +136,7 @@ exports.createEvaluation = async (req, res) => {
       taskName,
       recordedBy,
       ratings: ratings || [],
+      history: [],
       createdBy: req.user._id,
     });
 
@@ -150,6 +166,17 @@ exports.updateEvaluation = async (req, res) => {
 
     if (!evaluation) {
       return res.status(404).json({ message: 'Evaluation not found' });
+    }
+
+    // Save current state to history before updating
+    if (date && date !== evaluation.date.toISOString().split('T')[0]) {
+      // Date is changing, save current state to history
+      evaluation.history.push({
+        date: evaluation.date,
+        recordedBy: evaluation.recordedBy,
+        ratings: evaluation.ratings,
+        updatedAt: evaluation.updatedAt,
+      });
     }
 
     // Verify recorder exists if changing
@@ -184,8 +211,14 @@ exports.updateEvaluation = async (req, res) => {
 
     // Populate response with related data
     const populatedEvaluation = await Evaluation.findById(updatedEvaluation._id)
+      .populate('taskId', 'name code')
       .populate('recordedBy', 'firstName lastName militaryRank')
       .populate('ratings.soldier', 'firstName lastName militaryRank')
+      .populate('history.recordedBy', 'firstName lastName militaryRank')
+      .populate(
+        'history.ratings.soldier',
+        'firstName lastName militaryRank primaryUnit'
+      )
       .populate('createdBy', 'username');
 
     res.json(populatedEvaluation);
