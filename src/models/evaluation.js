@@ -1,13 +1,18 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const evaluationSchema = new mongoose.Schema({
+  taskId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Task',
+    required: true,
+  },
   date: {
     type: Date,
     required: true,
   },
   evaluationType: {
     type: String,
-    enum: ["Oficialus", "Neoficialus"],
+    enum: ['Oficialus', 'Neoficialus'],
     required: true,
   },
   taskCode: {
@@ -22,19 +27,19 @@ const evaluationSchema = new mongoose.Schema({
   },
   recordedBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Soldier",
+    ref: 'Soldier',
     required: true,
   },
   ratings: [
     {
       soldier: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Soldier",
+        ref: 'Soldier',
         required: true,
       },
       rating: {
         type: String,
-        enum: ["I", "IA", "NI", "-"],
+        enum: ['I', 'IA', 'NI', '-'],
         required: true,
       },
     },
@@ -53,7 +58,7 @@ const evaluationSchema = new mongoose.Schema({
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
     required: true,
   },
   createdAt: {
@@ -63,13 +68,13 @@ const evaluationSchema = new mongoose.Schema({
 });
 
 // Calculate completion percentage and pass counts before saving
-evaluationSchema.pre("save", function (next) {
+evaluationSchema.pre('save', function (next) {
   if (this.ratings && this.ratings.length > 0) {
     let passedCount = 0;
 
     this.ratings.forEach((rating) => {
       // Count ratings that are "I" or "IA" as passed
-      if (rating.rating === "I" || rating.rating === "IA") {
+      if (rating.rating === 'I' || rating.rating === 'IA') {
         passedCount++;
       }
     });
@@ -91,4 +96,4 @@ evaluationSchema.index({ date: 1 }); // For date range queries
 evaluationSchema.index({ evaluationType: 1 }); // For type filtering
 evaluationSchema.index({ unit: 1 }); // For unit filtering
 
-module.exports = mongoose.model("Evaluation", evaluationSchema);
+module.exports = mongoose.model('Evaluation', evaluationSchema);

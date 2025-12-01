@@ -1,5 +1,6 @@
 const Evaluation = require('../models/evaluation');
 const Soldier = require('../models/soldier');
+const Task = require('../models/task');
 
 // @desc    Get all evaluations
 // @route   GET /api/evaluations
@@ -34,6 +35,7 @@ exports.getAllEvaluations = async (req, res) => {
     // Get all evaluations with populated fields
     const evaluations = await Evaluation.find(filter)
       .sort({ date: -1 })
+      .populate('taskId', 'name code')
       .populate('recordedBy', 'firstName lastName militaryRank')
       .populate(
         'ratings.soldier',
@@ -53,6 +55,7 @@ exports.getAllEvaluations = async (req, res) => {
 exports.getEvaluationById = async (req, res) => {
   try {
     const evaluation = await Evaluation.findById(req.params.id)
+      .populate('taskId', 'name code')
       .populate('recordedBy', 'firstName lastName militaryRank')
       .populate(
         'ratings.soldier',
@@ -75,8 +78,21 @@ exports.getEvaluationById = async (req, res) => {
 // @access  Private (Admin/Superuser)
 exports.createEvaluation = async (req, res) => {
   try {
-    const { date, evaluationType, taskCode, taskName, recordedBy, ratings } =
-      req.body;
+    const {
+      taskId,
+      date,
+      evaluationType,
+      taskCode,
+      taskName,
+      recordedBy,
+      ratings,
+    } = req.body;
+
+    // Verify task exists
+    const task = await Task.findById(taskId);
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
 
     // Verify recorder exists
     const recorderExists = await Soldier.findById(recordedBy);
@@ -98,6 +114,7 @@ exports.createEvaluation = async (req, res) => {
 
     // Create evaluation
     const evaluation = await Evaluation.create({
+      taskId,
       date,
       evaluationType,
       taskCode,
@@ -109,6 +126,7 @@ exports.createEvaluation = async (req, res) => {
 
     // Populate response with related data
     const populatedEvaluation = await Evaluation.findById(evaluation._id)
+      .populate('taskId', 'name code')
       .populate('recordedBy', 'firstName lastName militaryRank')
       .populate('ratings.soldier', 'firstName lastName militaryRank')
       .populate('createdBy', 'username');
