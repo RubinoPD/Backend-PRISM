@@ -1,4 +1,4 @@
-const Task = require("../models/task");
+const Task = require('../models/task');
 
 // @desc    Get all tasks
 // @route   GET /api/tasks
@@ -14,7 +14,7 @@ exports.getAllTasks = async (req, res) => {
 
     const tasks = await Task.find(filter)
       .sort({ name: 1 })
-      .populate("createdBy", "username");
+      .populate('createdBy', 'username');
 
     res.json(tasks);
   } catch (error) {
@@ -28,12 +28,12 @@ exports.getAllTasks = async (req, res) => {
 exports.getTaskById = async (req, res) => {
   try {
     const task = await Task.findById(req.params.id).populate(
-      "createdBy",
-      "username"
+      'createdBy',
+      'username'
     );
 
     if (!task) {
-      return res.status(404).json({ message: "Task not found" });
+      return res.status(404).json({ message: 'Task not found' });
     }
 
     res.json(task);
@@ -47,14 +47,14 @@ exports.getTaskById = async (req, res) => {
 // @access  Private (Admin/Superuser)
 exports.createTask = async (req, res) => {
   try {
-    const { code, name, description, type } = req.body;
+    const { name, code, description, type, duration } = req.body;
 
     // Check if task with same code already exists
     const existingTaskByCode = await Task.findOne({ code });
     if (existingTaskByCode) {
       return res
         .status(400)
-        .json({ message: "A task with this code already exists" });
+        .json({ message: 'A task with this code already exists' });
     }
 
     // Check if task with same name already exists
@@ -62,13 +62,15 @@ exports.createTask = async (req, res) => {
     if (existingTask) {
       return res
         .status(400)
-        .json({ message: "A task with this name already exists" });
+        .json({ message: 'A task with this name already exists' });
     }
 
     const task = await Task.create({
       name,
+      code,
       description,
       type,
+      duration,
       createdBy: req.user._id,
     });
 
@@ -83,13 +85,13 @@ exports.createTask = async (req, res) => {
 // @access  Private (Admin/Superuser)
 exports.updateTask = async (req, res) => {
   try {
-    const { code, name, description, type } = req.body;
+    const { name, code, description, type, duration } = req.body;
 
     // Find task
     const task = await Task.findById(req.params.id);
 
     if (!task) {
-      return res.status(404).json({ message: "Task not found" });
+      return res.status(404).json({ message: 'Task not found' });
     }
 
     // If code is changing, check for duplicates
@@ -98,7 +100,7 @@ exports.updateTask = async (req, res) => {
       if (existingTaskByCode) {
         return res
           .status(400)
-          .json({ message: "A task with this code already exists" });
+          .json({ message: 'A task with this code already exists' });
       }
       task.code = code;
     }
@@ -109,14 +111,17 @@ exports.updateTask = async (req, res) => {
       if (existingTask) {
         return res
           .status(400)
-          .json({ message: "A task with this name already exists" });
+          .json({ message: 'A task with this name already exists' });
       }
     }
 
     // Update fields
-    task.name = name || task.name;
-    task.description = description || task.description;
-    task.type = type || task.type;
+    if (name) task.name = name || task.name;
+    if (code) task.code = code || task.code;
+    if (description !== undefined)
+      task.description = description || task.description;
+    if (type) task.type = type || task.type;
+    if (duration !== undefined) task.duration = duration || task.duration;
 
     const updatedTask = await task.save();
     res.json(updatedTask);
@@ -133,11 +138,11 @@ exports.deleteTask = async (req, res) => {
     const task = await Task.findById(req.params.id);
 
     if (!task) {
-      return res.status(404).json({ message: "Task not found" });
+      return res.status(404).json({ message: 'Task not found' });
     }
 
     await task.deleteOne();
-    res.json({ message: "Task removed successfully" });
+    res.json({ message: 'Task removed successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

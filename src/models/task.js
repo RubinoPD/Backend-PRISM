@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const taskSchema = new mongoose.Schema({
   code: {
@@ -20,7 +20,13 @@ const taskSchema = new mongoose.Schema({
   type: {
     type: String,
     required: true,
-    enum: ["Individualios", "Kolektyvines"],
+    enum: ['Individualios', 'Kolektyvines'],
+  },
+  duration: {
+    type: Number,
+    required: true,
+    min: 0.5,
+    max: 240,
   },
   createdAt: {
     type: Date,
@@ -28,9 +34,9 @@ const taskSchema = new mongoose.Schema({
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
     required: true,
   },
 });
 
-module.exports = mongoose.model("Task", taskSchema);
+module.exports = mongoose.model('Task', taskSchema);
