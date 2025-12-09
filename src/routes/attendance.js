@@ -1,6 +1,6 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const { protect, adminOnly, adminOrSuperuser } = require("../middleware/auth");
+const { protect, adminOnly, adminOrSuperuser } = require('../middleware/auth');
 const {
   getAllAttendance,
   getAttendanceByDate,
@@ -9,22 +9,20 @@ const {
   updateAttendance,
   deleteAttendance,
   getAttendanceStats,
-} = require("../controllers/attendance");
+} = require('../controllers/attendance');
 
 // All routes are protected
 router.use(protect);
 
 // Routes accessible by all authenticated users
-router.get("/", getAllAttendance);
-router.get("/stats", getAttendanceStats);
-router.get("/date/:date", getAttendanceByDate);
+router.get('/', getAllAttendance);
+router.get('/stats', getAttendanceStats);
+router.get('/date/:date', getAttendanceByDate);
 
 // Routes accessible by admin and superuser
-router.post("/", adminOrSuperuser, createAttendance);
-router.post("/bulk", adminOrSuperuser, bulkCreateAttendance);
-router.put("/:id", adminOrSuperuser, updateAttendance);
-
-// Routes accessible only by admin
-router.delete("/:id", adminOnly, deleteAttendance);
+router.post('/', adminOrSuperuser, createAttendance);
+router.post('/bulk', adminOrSuperuser, bulkCreateAttendance);
+router.put('/:id', adminOrSuperuser, updateAttendance);
+router.delete('/:id', adminOrSuperuser, deleteAttendance);
 
 module.exports = router;

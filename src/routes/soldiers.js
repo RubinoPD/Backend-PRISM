@@ -17,8 +17,6 @@ router.get('/', getAllSoldiers);
 router.get('/:id', getSoldierById);
 router.post('/', adminOrSuperuser, createSoldier);
 router.put('/:id', adminOrSuperuser, updateSoldier);
-
-// Routes accessible only by admin
-router.delete('/:id', deleteSoldier);
+router.delete('/:id', adminOrSuperuser, deleteSoldier);
 
 module.exports = router;

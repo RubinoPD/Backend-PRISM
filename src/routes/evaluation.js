@@ -1,6 +1,6 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const { protect, adminOnly, adminOrSuperuser } = require("../middleware/auth");
+const { protect, adminOnly, adminOrSuperuser } = require('../middleware/auth');
 const {
   getAllEvaluations,
   getEvaluationById,
@@ -8,21 +8,19 @@ const {
   updateEvaluation,
   deleteEvaluation,
   getEvaluationStats,
-} = require("../controllers/evaluation");
+} = require('../controllers/evaluation');
 
 // All routes are protected
 router.use(protect);
 
 // Routes accessible by all authenticated users
-router.get("/", getAllEvaluations);
-router.get("/stats", getEvaluationStats);
-router.get("/:id", getEvaluationById);
+router.get('/', getAllEvaluations);
+router.get('/stats', getEvaluationStats);
+router.get('/:id', getEvaluationById);
 
 // Routes accessible by admin and superuser
-router.post("/", adminOrSuperuser, createEvaluation);
-router.put("/:id", adminOrSuperuser, updateEvaluation);
-
-// Routes accessible only by admin
-router.delete("/:id", adminOnly, deleteEvaluation);
+router.post('/', adminOrSuperuser, createEvaluation);
+router.put('/:id', adminOrSuperuser, updateEvaluation);
+router.delete('/:id', adminOrSuperuser, deleteEvaluation);
 
 module.exports = router;
