@@ -188,6 +188,37 @@ exports.updateUser = async (req, res) => {
   }
 };
 
+// @desc    Reset own password
+// @route   PUT /api/auth/reset-password
+// @access  Private (any authenticated user)
+exports.resetPassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    // Get user with password field
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Verify current password
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Current password is incorrect' });
+    }
+
+    // Update password
+    user.password = newPassword;
+    await user.save();
+
+    res.json({ message: 'Password reset successfully' });
+  } catch (error) {
+    console.error('Error resetting password:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // @desc    Delete user
 // @route   DELETE /api/auth/users/:id
 // @access  Admin

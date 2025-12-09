@@ -9,6 +9,7 @@ const {
   getUserById,
   updateUser,
   deleteUser,
+  resetPassword,
 } = require('../controllers/auth');
 
 // Public routes
@@ -16,6 +17,7 @@ router.post('/login', loginUser);
 
 // Protected routes
 router.get('/me', protect, getUserProfile);
+router.put('/reset-password', protect, resetPassword);
 
 // Admin only routes
 router.post('/register', protect, adminOnly, registerUser);
